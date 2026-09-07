@@ -1,26 +1,266 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-ink: #04040f;
+  --color-ink-2: #0a0a1e;
+  --color-line: rgba(255, 255, 255, 0.08);
+  --color-mute: #94a3b8;
+  --color-faint: #64748b;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-accent: #00d4ff;
+  --color-accent-2: #7c3aed;
+  --color-accent-3: #ec4899;
+  --color-accent-4: #10b981;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-pulse-ring: pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-blink: blink 1.1s step-end infinite;
+  --animate-holographic: holographic 6s linear infinite;
+  --animate-grid-scroll: grid-scroll 14s linear infinite;
+  --animate-orb-1: orb-1 26s ease-in-out infinite;
+  --animate-orb-2: orb-2 32s ease-in-out infinite;
+  --animate-orb-3: orb-3 22s ease-in-out infinite;
+  --animate-scan: scan 8s ease-in-out infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 0.7; }
+    70%, 100% { transform: scale(2.2); opacity: 0; }
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  @keyframes holographic {
+    0% { background-position: 200% center; }
+    100% { background-position: -200% center; }
+  }
+  @keyframes grid-scroll {
+    from { transform: translateY(0); }
+    to { transform: translateY(64px); }
+  }
+  @keyframes orb-1 {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    33% { transform: translate3d(90px, -70px, 0) scale(1.12); }
+    66% { transform: translate3d(-50px, 90px, 0) scale(0.9); }
+  }
+  @keyframes orb-2 {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    33% { transform: translate3d(-90px, 70px, 0) scale(0.88); }
+    66% { transform: translate3d(70px, -90px, 0) scale(1.14); }
+  }
+  @keyframes orb-3 {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(50px, 55px, 0) scale(1.08); }
+  }
+  @keyframes scan {
+    0%, 100% { opacity: 0; transform: translateY(-40%); }
+    50% { opacity: 1; transform: translateY(140%); }
   }
 }
 
+/*
+ * Top-level (not inside @theme) on purpose: these are referenced from inline
+ * style="animation: ..." rather than from an `animate-*` class, and Tailwind v4
+ * tree-shakes @theme keyframes whose --animate-* variable is never used.
+ */
+@keyframes cube-spin {
+  from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+  to { transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg); }
+}
+@keyframes cube-spin-rev {
+  from { transform: rotateX(360deg) rotateY(0deg) rotateZ(180deg); }
+  to { transform: rotateX(0deg) rotateY(360deg) rotateZ(0deg); }
+}
+@keyframes sphere-spin {
+  from { transform: rotateX(16deg) rotateY(0deg); }
+  to { transform: rotateX(16deg) rotateY(360deg); }
+}
+@keyframes drift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-22px); }
+}
+@keyframes spin-cw {
+  to { transform: rotate(360deg); }
+}
+@keyframes spin-ccw {
+  to { transform: rotate(-360deg); }
+}
+@keyframes portrait-scan {
+  0% { transform: translateY(-110%); opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { transform: translateY(560%); opacity: 0; }
+}
+
+/* rotating conic-gradient border for the hero portrait */
+.glow-border {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.glow-border::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 190%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  z-index: -1;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    #00d4ff 55deg,
+    #7c3aed 125deg,
+    #ec4899 195deg,
+    #10b981 250deg,
+    transparent 310deg
+  );
+  animation: spin-cw 7s linear infinite;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  border-color: var(--color-line);
+}
+
+/* lenis drives scrolling when it is active; fall back to native smooth otherwise */
+html:not(.lenis) {
+  scroll-behavior: smooth;
+}
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-ink);
+  color: #f1f5f9;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-accent) 40%, transparent);
+  color: #ffffff;
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #04040f; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00d4ff66, #7c3aed66);
+  border-radius: 999px;
+  border: 2px solid #04040f;
+}
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #00d4ffaa, #7c3aedaa); }
+
+/* ---------- utilities ---------- */
+@utility container-x {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  @media (min-width: 768px) { padding-inline: 2rem; }
+}
+
+@utility text-gradient {
+  background-image: linear-gradient(100deg, #ffffff 0%, #cfe9ff 35%, var(--color-accent) 60%, var(--color-accent-2) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* shimmering holographic sweep, as on the reference site */
+@utility text-holo {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-accent) 0%,
+    #ffffff 20%,
+    var(--color-accent-2) 40%,
+    var(--color-accent-3) 60%,
+    #ffffff 80%,
+    var(--color-accent) 100%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: holographic 6s linear infinite;
+}
+
+@utility glass {
+  background: linear-gradient(160deg, rgba(255,255,255,0.055), rgba(255,255,255,0.015));
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(255,255,255,0.09);
+}
+
+@utility grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(0,212,255,0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,212,255,0.055) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+@utility noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+@utility preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* card sheen that follows the pointer (fed --mx/--my from JS) */
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: radial-gradient(
+    280px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(0, 212, 255, 0.18),
+    rgba(124, 58, 237, 0.10) 42%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+.spotlight-card:hover::before { opacity: 1; }
+
+.mask-fade-x {
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(.lenis) { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
