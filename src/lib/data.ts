@@ -27,6 +27,8 @@ export const roles = [
   "React & Next.js Developer",
   "React Native Developer",
   "Full-Stack Engineer",
+  "AI Engineer",
+  "MERN Stack Developer",
 ];
 
 export const stats = [
